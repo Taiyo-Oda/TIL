@@ -4,22 +4,32 @@
 
 ## 手順(FlutterSDK)
 
-ダウンロードしたファイルを解凍して任意のフォルダに入れる    
+1. ダウンロードしたファイルを解凍して任意のフォルダに入れる  
+今回は、  
 /Users/ユーザフォルダ/development  
-に保存した場合  
-格納後、パスを通すために.bash_profileを編集してパスを追加する
+ 
 
-vimで.bash_profileを編集する  
-`vim ~/.bash_profile`
+1. 使用しているシェルを調べる  
+`$ echo $SHELL`
 
+1. シェルを開く  
+    1. zshの場合  
+    `$ vim .zshrc`
+    1. bashの場合  
+    `$ vim .bash_profile`
+  
+1. 編集する(pathを追加)  
 実行直後にiキーを押して挿入モードに移行後、以下の行を追加  
 追加後にEscキーを押してノーマルモードに戻った後、:wqで保存してvimを終了させる  
 `export PATH="$HOME/development/flutter/bin:$PATH"`
 
-完了後、.bash_profileを再読み込みする  
-`source ~/.bash_profile`
+1. 完了後、再読み込みする  
+    1. zshの場合   
+    `$ source .zshrc`
+    1. bashの場合  
+    `$ source ~/.bash_profile`
 
-完了したら正常にパスが通っていることを確認する  
-`flutter --version`
+1. 完了したら正常にパスが通っていることを確認する  
+`$ flutter --version`
 
 [vimで使用するコマンドについて](https://fuchiaz.com/vim/#vimLinux)

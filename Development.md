@@ -1,8 +1,10 @@
-# 「PATHを通す」について
-## 概要
+# 開発の基礎的な知識について蓄積していく
+
+## 「PATHを通す」について
+### 概要
 実行ファイルを（ファイルが置いてある場所を指定しないで）ファイル名を指定するだけで実行できるようにする。[参考](https://wa3.i-3-i.info/word18471.html)
 
-## 手順(FlutterSDK)
+### 手順(FlutterSDK)
 
 1. ダウンロードしたファイルを解凍して任意のフォルダに入れる  
 今回は、  
@@ -33,3 +35,13 @@
 `$ flutter --version`
 
 [vimで使用するコマンドについて](https://fuchiaz.com/vim/#vimLinux)
+
+
+
+## githubの使い方
+### リポジトリの作成からpushまで
+1. github上で任意のリポジトリを作成
+2. ローカル環境にローカルリポジトリを作成
+
+`export PATH="$HOME/development/flutter/bin:$PATH"`r位ポジちろ
+`export PATH="$HOME/development/flutter/bin:$PATH"`

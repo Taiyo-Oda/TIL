@@ -38,10 +38,9 @@
 
 
 
+
 ## githubの使い方
 ### リポジトリの作成からpushまで
 1. github上で任意のリポジトリを作成
-2. ローカル環境にローカルリポジトリを作成
-
-`export PATH="$HOME/development/flutter/bin:$PATH"`r位ポジちろ
-`export PATH="$HOME/development/flutter/bin:$PATH"`
+2. ローカル環境にローカルリポジトリを作成  
+[gitコマンド早見表](https://qiita.com/kohga/items/dccf135b0af395f69144)

@@ -34,3 +34,5 @@ public class MultiThreaded extends Thread{
 
 }
 ```
+
+threadクラスの実装ではrunメソッドをオーバーライドする

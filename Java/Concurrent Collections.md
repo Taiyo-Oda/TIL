@@ -204,3 +204,90 @@ public class ConcurrentHashMapDemo extends Thread {
 }
 
 ```
+
+
+## BlockingQueue
+producerはQueueに仕事を入れ、consumerはその仕事を受け取り終わらせる。
+* producerはputメソッドを使ってQueueに仕事を投入する
+* Queueが満杯になるとproducerが自動的にブロックされる
+* consumerが作業を終えていない場合、producerをブロックする
+* Queueに仕事がない状態だと、consumerはブロックされる
+```
+package concurrentcollections;
+
+import java.util.concurrent.BlockingQueue;
+
+public class OrderProducer implements Runnable {
+
+	private BlockingQueue<String> queue;
+
+	public OrderProducer(BlockingQueue<String> queue) {
+		this.queue = queue;
+	}
+
+	@Override
+	public void run() {
+		try {
+			// put : 指定された要素をこのキューに挿入し、必要ならスペースが空くまで待つ。
+			queue.put("Mac Book");
+			queue.put("Dell LapTop");
+			queue.put("Iphone");
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
+}
+
+```
+
+```
+package concurrentcollections;
+
+import java.util.concurrent.BlockingQueue;
+
+public class OrderConsumer implements Runnable {
+
+	private BlockingQueue<String> queue;
+
+	public OrderConsumer(BlockingQueue<String> queue) {
+		this.queue = queue;
+	}
+
+	@Override
+	public void run() {
+		try {
+			// take : このキューの先頭を取得し削除する。必要であれば、要素が利用可能になるまで待つ。
+			System.out.println(queue.take());
+			System.out.println(queue.take());
+			System.out.println(queue.take());
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
+}
+
+```
+
+```
+package concurrentcollections;
+
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+
+public class BlockingQueueTest {
+
+	public static void main(String[] args) {
+
+		BlockingQueue<String> queue = new ArrayBlockingQueue<String>(1024);
+		OrderProducer orderProducer = new OrderProducer(queue);
+		OrderConsumer orderConsumer = new OrderConsumer(queue);
+
+		new Thread(orderProducer).start();
+		new Thread(orderConsumer).start();
+	}
+
+}
+
+```

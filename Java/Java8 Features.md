@@ -213,4 +213,223 @@ public class PredicateJoins {
 ```
 
 
+## ダブルコロン演算子
+Java8では、ダブルコロン演算子も導入され、それを使ってメソッドやコンストラクタを関数型インターフェイスのメソッドにマップすることができる
 
+唯一のルールは、メソッドの引数が同じでなければならない。
+```
+package com.bharath.java8.methodref;
+
+public class MethodRefDemo {
+
+	// Runnableのrunメソッドには引数がないため、引数を指定しない
+	public static void myMethod() {
+		for (int i = 0; i <= 10; i++) {
+			System.out.println("Child Thread");
+		}
+	}
+
+	public static void main(String[] args) {
+		/*
+		 * RunnableのrunメソッドにmyMethodをマッピングする
+		 * →ダブルコロン演算子を使って、自作のメソッドを機能インターフェイスのメソッドにマッピングする
+		 */
+		Runnable r = MethodRefDemo::myMethod;
+
+		Thread t = new Thread(r);
+		t.start();
+
+		for (int i = 0; i <= 10; i++) {
+			System.out.println("Parent Thread");
+		}
+	}
+
+}
+
+```
+
+*インスタンスメソッドの参照*
+```
+package com.bharath.java8.methodref;
+
+public interface MyInterface {
+
+	public void myMethod(int i);
+
+}
+```
+```
+package com.bharath.java8.methodref;
+
+public class MyClass {
+
+	// インターフェイスの引数と同じ引数を持つ自作メソッドを作成する
+	public void myMethod123(int i) {
+		System.out.println(i);
+	}
+
+	public static void main(String[] args) {
+		// myMethodに指定した引数を返すラムダ式を表現している
+		MyInterface f = i -> System.out.println(i);
+		f.myMethod(10);
+
+		// このクラスのインスタンスを作成し、ダブルコロンを使用して、自作のメソッドをマッピングする
+		MyClass c = new MyClass();
+		MyInterface f1 = c::myMethod123;
+		f1.myMethod(20);
+	}
+
+}
+
+```
+
+*コンストラクタの参照*
+```
+package com.bharath.java8.methodref.constructors;
+
+public interface MyInterface {
+
+	MyClass get(String s);
+}
+
+```
+```
+package com.bharath.java8.methodref.constructors;
+
+public class MyClass {
+
+	private String s;
+
+	MyClass(String s) {
+		this.s = s;
+		System.out.println("Inside the constructor: " + s);
+	}
+}
+
+```
+```
+package com.bharath.java8.methodref.constructors;
+
+public class Test {
+
+	public static void main(String[] args) {
+		// MyClassのインスタンスを返すラムダ式を表現している
+		MyInterface f1 = s -> new MyClass(s);
+		f1.get("Using Lambdas");
+
+		// コンストラクタのマッピングを行う場合は、クラス名::new演算子を使用する
+		MyInterface f2 = MyClass::new;
+		f2.get("Using Constructor Mapping");
+	}
+}
+
+```
+
+
+## Streams
+データベースに対して使われるSQLに非常に似た宣言的な方法でデータを処理できるようになる
+→コレクションないのデータやオブジェクトを非常に簡単に処理できるようになる
+※ファイルの読み書きのためのjava.io.streamとは異なる
+
+streamメソッドを呼び出すことで、コレクション上のストリームを取得することができる。
+コレクションを処理するストリームを取得したら、2つのフェーズでそれを実行する
+
+*1. Streamの設定（Configuration）*
+Configurationには二つの方法がある
+*filter*
+filterメソッドを呼び出し、引数にPredicateを渡す
+public Stream filter(Predicate<T> p)
+コレクション内のオブジェクトはPredicateに基づいてフィルタリングされ、フィルタリングされたオブジェクトを含むstreamが返される
+→単にフィルタをかけたい場合は、filterメソッドを使用する
+
+*map*
+mapメソッドを呼び出し、引数にFunctionを渡す
+public Stream map(Function f)
+Functionは新しいコレクションを作成し、コレクション内の各オブジェクトに対して新しいオブジェクトを作成する
+→入力に基づいて新しいオブジェクトのセットやコレクションのセットを作成したい場合は、mapを使用することになる。map は入力を対応する出力オブジェクトにマッピングする。
+
+*2. データそのものを処理する（Processing）*
+Stream API
+* collect()
+* count()
+* sorted()
+* min()
+* max()
+などのメソッドを使用してデータの処理を行う
+
+*filter*
+```
+package com.bharath.java8.stream;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class FilterEvenNumbers {
+
+	public static void main(String[] args) {
+		/*
+		 * 以下はコレクションデータの処理方法 偶数のみを出力できるようにフィルタリングを行う
+		 */
+		List<Integer> l1 = new ArrayList<>();
+		for (int i = 0; i <= 10; i++) {
+			l1.add(i);
+		}
+		System.out.println(l1);
+
+		// 通常の方法
+		List<Integer> l2 = new ArrayList<>();
+		for (Integer i : l1) {
+			if (i % 2 == 0) {
+				l2.add(i);
+			}
+		}
+		System.out.println(l2);
+
+		// streamを使用
+		List<Integer> collect = l1.stream().filter(i -> i % 2 == 0).collect(Collectors.toList());
+		/*
+		 * li.stream().filter(i -> % 2 == 0)
+		 * →streamの設定（filterメソッドで偶数番号のみをフィルタリングする）
+		 * .collect(Collectors.toList())
+		 * →処理ステップ(CollectoreクラスのtoList()メソッドを使用してフィルタからの出力をリストに集めている)
+		 */
+
+	}
+
+}
+
+```
+
+*map*
+```
+package com.bharath.java8.stream;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class UpperToLowerCase {
+
+	public static void main(String[] args) {
+
+		List<String> l1 = new ArrayList<>();
+		l1.add("JOHN");
+		l1.add("BHARATH");
+		l1.add("JIM");
+
+		System.out.println(l1);
+
+		List<String> l2 = l1.stream().map(s -> s.toLowerCase()).collect(Collectors.toList());
+		/*
+		 * l1.stream().map(s -> s.toLowerCase())
+		 * →streamの設定（mapメソッドを使用して、コレクション内の各要素を与えられた関数に変換する）
+		 * .collect(Collectors.toList())
+		 * →処理ステップ(変換後の全ての要素を受け取り、コレクションの中に入れる)
+		 */
+		System.out.println(l2);
+	}
+
+}
+
+```

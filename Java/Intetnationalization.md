@@ -100,13 +100,47 @@ public class DateFotmatTest {
 		System.out.println("Date in US Format: " + usDF.format(d));
 		System.out.println("Date in UK Format: " + ukDF.format(d));
 
+		// getTimeInstance : 現在時刻を出力する
+		DateFormat timeInstance = DateFormat.getTimeInstance();
+		System.out.println(timeInstance.format(d));
+
+		// getDateTimeInstance() : 日付と時刻を出力する
+		DateFormat dateTimeInstance = DateFormat.getDateTimeInstance(0, 0);
+		System.out.println(dateTimeInstance.format(d));
+
 	}
 
 }
 
 ```
 
+### SimpleDateFormat
+DateFormatクラスの子クラスで、日付を任意のフォーマットに変換できるほか、日付の文字列表現を変換するためのパースメソッドも提供されている
+```
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
+public class SimpleDateFormatTest {
 
+	public static void main(String[] args) {
 
+		// SimpleDateFormat : 引数に指定したフォーマットで日付を出力できる
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/M/dd hh:mm:ss");
+		String date = sdf.format(new Date());
+		System.out.println(date);
 
+		// parse日付の文字表現を変換する 例）DBから読み取ったデータを変換する
+		String dateAsString = "10-12-2022";
+		SimpleDateFormat sdf1 = new SimpleDateFormat("dd-M-yyyy");
+		try {
+			Date date1 = sdf1.parse(dateAsString);
+			System.out.println(date1);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+	}
+
+}
+
+```

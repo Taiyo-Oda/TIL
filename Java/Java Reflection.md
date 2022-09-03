@@ -7,13 +7,72 @@ JavaReflectionの主要なメソッドは、すべてjava.lang.Classのインス
 * java.lang.reflect.Method
 * java.lang.reflect.Field
 * java.lang.reflect.Annotation
-
 →コンストラクタ、メソッド、フィールド、アノテーションなどにアクセスする全てのReflectionメソッドを持っている
+```
+package com.bharath.java.reflection;
+
+@MyAnnotation(value1 = "123", value2 = "456")
+public class Calculator {
+
+	private double num1;
+	private double num2;
+
+	public Calculator() {
+		System.out.println("Default Constructor");
+	}
+
+	public Calculator(double num1, double num2) {
+		this.setNum1(num1);
+		this.setNum2(num2);
+	}
+
+	public double getNum1() {
+		return num1;
+	}
+
+	public void setNum1(double num1) {
+		this.num1 = num1;
+	}
+
+	public double getNum2() {
+		return num2;
+	}
+
+	public void setNum2(double num2) {
+		this.num2 = num2;
+	}
+
+	public double sum(int n1, int n2) {
+		return n1 + n2;
+	}
+
+}
+
+```
 
 ```
 package com.bharath.java.reflection;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+@Retention(RetentionPolicy.RUNTIME)
+public @interface MyAnnotation {
+
+	public String value1();
+
+	public String value2();
+
+}
+
+```
+
+```
+ppackage com.bharath.java.reflection;
+
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -59,6 +118,22 @@ public class Test {
 			System.out.println(getNum1.invoke(myObj, null));
 			System.out.println(getNum2.invoke(myObj, null));
 
+			// フィールドにアクセスする
+			Field num1Field = myClass.getDeclaredField("num1");
+			// 引数にtrueを設定するとプライベートフィールドにアクセスできるようになる
+			num1Field.setAccessible(true);
+			// フィールドに設定したい値を渡す
+			num1Field.set(myObj, 80);
+			System.out.println(getNum1.invoke(myObj, null));
+
+			Annotation[] annotations = myClass.getAnnotations();
+			System.out.println(annotations);
+
+			// アノテーションに追加したフィールドやパラメータ、値にアクセスする
+			MyAnnotation annotation = (MyAnnotation) annotations[0];
+			System.out.println(annotation.value1());
+			System.out.println(annotation.value2());
+
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (NoSuchMethodException e) {
@@ -72,6 +147,8 @@ public class Test {
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (NoSuchFieldException e) {
 			e.printStackTrace();
 		}
 	}

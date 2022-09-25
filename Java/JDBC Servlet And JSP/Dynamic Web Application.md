@@ -263,6 +263,205 @@ public class UpdateUserServlet extends HttpServlet {
 ```
 
 
+### Servlet を使用してUser情報の読み込み（表示）
+*ReadUserServlet.java*
+```
+package com.bharath.servlet;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+/**
+ * Servlet implementation class CreateUserServlet
+ */
+// ここではアノテーションを利用してサーブレットをURIにマッピングしている
+@WebServlet("/readServlet")
+public class ReadUserServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+	private Connection connection;
+       
+	// DBとの接続を行う
+	public void init() {
+		try {
+			// Tomcatは自動的にJDBCドライバを検索してロードするサービスプロバイダメカニズムを無効にしているため、ドライバクラスを手動でロードしている
+			Class.forName("com.mysql.jdbc.Driver");
+			connection = DriverManager.getConnection("jdbc:mysql://localhost/mydb", "root", "taiyou03");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {		
+		try {
+			Statement statement = connection.createStatement();
+			// executeQuery：与えられたSQL文を実行し、1つのResultSetオブジェクトを返す
+			ResultSet resultSet = statement.executeQuery("select * from user");
+			// getWriter：クライアントに文字テキストを送信することができる PrintWriter オブジェクトを返す
+			PrintWriter out = response.getWriter();
+			out.print("<table>");
+			out.print("<tr>");
+			out.print("<th>");
+			out.print("FirstName");
+			out.print("</th>");
+			out.print("<th>");
+			out.print("LastName");
+			out.print("</th>");
+			out.print("<th>");
+			out.print("Email");
+			out.print("</th>");
+			out.print("</tr>");
+			while(resultSet.next()) {
+				out.print("<tr>");
+				
+				out.print("<td>");
+				out.print(resultSet.getString(1));
+				out.print("</td>");
+				out.print("<td>");
+				out.print(resultSet.getString(2));
+				out.print("</td>");
+				out.print("<td>");
+				out.print(resultSet.getString(3));
+				out.print("</td>");
+				
+				out.print("</tr>");
+			}
+			out.print("</table>");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	// DBとの接続を終了する
+	public void destroy() {
+		try {
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+}
+
+```
+
+
+### servletを使用してUser情報の削除
+*deleteUser.HTML*
+```
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Delete User</title>
+</head>
+<body>
+	<h1>Delete User:</h1>
+	<form method="post" action="deleteServlet">
+		<table>
+			<tr>
+				<td>Email:</td>
+				<td><input name="email" /></td>
+			</tr>
+			<tr>
+				<td />
+				<td><input type="submit" value="Delete" /></td>
+		</table>
+	</form>
+</body>
+</html>
+```
+
+*DeleteUserServlet.java*
+```
+package com.bharath.servlet;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+/**
+ * Servlet implementation class CreateUserServlet
+ */
+// ここではアノテーションを利用してサーブレットをURIにマッピングしている
+@WebServlet("/deleteServlet")
+public class DeleteUserServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+	private Connection connection;
+       
+	// DBとの接続を行う
+	public void init() {
+		try {
+			// Tomcatは自動的にJDBCドライバを検索してロードするサービスプロバイダメカニズムを無効にしているため、ドライバクラスを手動でロードしている
+			Class.forName("com.mysql.jdbc.Driver");
+			connection = DriverManager.getConnection("jdbc:mysql://localhost/mydb", "root", "taiyou03");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String email = request.getParameter("email");
+		
+		try {
+			Statement statement = connection.createStatement();
+			// INSERT、UPDATE、DELETE文、またはSQL DDL文のような何も返さないSQL文のいずれかを指定したSQL文を実行する
+			int result = statement.executeUpdate("delete from user where email='" + email + "'");
+			// クライアントに文字テキストを送信することができる PrintWriter オブジェクトを返す
+			PrintWriter out = response.getWriter();
+			if(result > 0) {
+				out.print("<h1>User Deleted</h1>");
+			} else {
+				out.print("<h1>User not found in the datebase</h1>");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	// DBとの接続を終了する
+	public void destroy() {
+		try {
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+}
+
+```
+
+
 *1　通信プロトコル（情報をやり取りするための取り決め）の一つで、webクライアントと、webサーバが通信を行う際に使用される。通信プロトコルでは主に「伝達の方法」と「情報の意味づけ」を規定している。<br>
 *2　HTTPリクエストの一部。メソッド, URI, HTTPバージョンの３つの文字列で成り立っている。<br>
 *3　同じ条件を何度繰り返しても、同じ結果が得られることを「副作用がない」という(例：ある位置時点で、Googleに何度同じ検索キーワードを入力しても結果は変わらない)<br>

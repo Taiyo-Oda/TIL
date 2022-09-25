@@ -1,3 +1,4 @@
+# Dynamic Web Application
 HTTPプロトコル(*1)では、WebクライアントがWebサーバにアクセスするためのいくつかのメソッドをサポートしている<br>
 その中でも主要なものが以下の２つである
 * GET
@@ -35,6 +36,231 @@ GETメソッドには以下のような問題がある
 前述の条件に当てはまらず、副作用がない処理ではGETリクエストを使用した方が、パラメータごと保存できるというメリットを活かすことができる
 
 
+### Servletを使用してUserを作成
+*addUser.HTML*
+```
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Add User</title>
+</head>
+<body>
+	<h1>User Registration:</h1>
+	<form method="post" action="addServlet">
+		<table>
+			<tr>
+				<td>First Name:</td>
+				<td><input name="firstName" /></td>
+			</tr>
+			<tr>
+				<td>Last Name :</td>
+				<td><input name="lastName" /></td>
+			</tr>
+			<tr>
+				<td>Email:</td>
+				<td><input name="email" /></td>
+			</tr>
+			<tr>
+				<td>Password:</td>
+				<td><input name="password" type="password" /></td>
+			</tr>
+			<tr>
+				<td />
+				<td><input type="submit" value="Add" /></td>
+		</table>
+	</form>
+</body>
+</html>
+```
+
+*CreateUserServlet.java*
+```
+package com.bharath.servlet;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+/**
+ * Servlet implementation class CreateUserServlet
+ */
+// ここではアノテーションを利用してサーブレットをURIにマッピングしている
+@WebServlet("/addServlet")
+public class CreateUserServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+	private Connection connection;
+       
+	// DBとの接続を行う
+	public void init() {
+		try {
+			// Tomcatは自動的にJDBCドライバを検索してロードするサービスプロバイダメカニズムを無効にしているため、ドライバクラスを手動でロードしている
+			Class.forName("com.mysql.jdbc.Driver");
+			connection = DriverManager.getConnection("jdbc:mysql://localhost/mydb", "root", "taiyou03");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String firstName = request.getParameter("firstName");
+		String lastName = request.getParameter("lastName");
+		String email = request.getParameter("email");
+		String password = request.getParameter("password");
+		
+		try {
+			Statement statement = connection.createStatement();
+			// INSERT、UPDATE、DELETE文、またはSQL DDL文のような何も返さないSQL文のいずれかを指定したSQL文を実行する
+			int result = statement.executeUpdate(
+					"insert into user values('" + firstName + "','" + lastName + "','" + email + "','" + password + "')"
+					);
+			// クライアントに文字テキストを送信することができる PrintWriter オブジェクトを返す
+			PrintWriter out = response.getWriter();
+			if(result > 0) {
+				out.print("<h1>USER CREATED</h1>");
+			} else {
+				out.print("<h1>Error Creating the User</h1>");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	// DBとの接続を終了する
+	public void destroy() {
+		try {
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+}
+
+```
+
+
+### Servletを使用してUser情報の更新
+*updateUser.HTML*
+```
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Update User</title>
+</head>
+<body>
+	<h1>Update User:</h1>
+	<form method="post" action="updateServlet">
+		<table>
+			<tr>
+				<td>Email:</td>
+				<td><input name="email" /></td>
+			</tr>
+
+			<tr>
+				<td>Password:</td>
+				<td><input name="password" type="password" /></td>
+			</tr>
+			<tr>
+				<td />
+				<td><input type="submit" value="Update" /></td>
+		</table>
+	</form>
+</body>
+</html>
+```
+
+*UpdateUserServlet.java*
+```
+package com.bharath.servlet;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+/**
+ * Servlet implementation class CreateUserServlet
+ */
+// ここではアノテーションを利用してサーブレットをURIにマッピングしている
+@WebServlet("/updateServlet")
+public class UpdateUserServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+	private Connection connection;
+       
+	// DBとの接続を行う
+	public void init() {
+		try {
+			// Tomcatは自動的にJDBCドライバを検索してロードするサービスプロバイダメカニズムを無効にしているため、ドライバクラスを手動でロードしている
+			Class.forName("com.mysql.jdbc.Driver");
+			connection = DriverManager.getConnection("jdbc:mysql://localhost/mydb", "root", "taiyou03");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String email = request.getParameter("email");
+		String password = request.getParameter("password");
+		
+		try {
+			Statement statement = connection.createStatement();
+			// INSERT、UPDATE、DELETE文、またはSQL DDL文のような何も返さないSQL文のいずれかを指定したSQL文を実行する
+			int result = statement.executeUpdate(
+					"update user set password='" + password + "' where email='" + email + "'"
+					);
+			// クライアントに文字テキストを送信することができる PrintWriter オブジェクトを返す
+			PrintWriter out = response.getWriter();
+			if(result > 0) {
+				out.print("<h1>Password Updated</h1>");
+			} else {
+				out.print("<h1>Error Updating the Password</h1>");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	// DBとの接続を終了する
+	public void destroy() {
+		try {
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+}
+
+```
 
 
 *1　通信プロトコル（情報をやり取りするための取り決め）の一つで、webクライアントと、webサーバが通信を行う際に使用される。通信プロトコルでは主に「伝達の方法」と「情報の意味づけ」を規定している。<br>

@@ -189,3 +189,44 @@ Sum Of <%=num1 %> and <%=num2 %> is <%=num1 + num2 %>
 <%@ include file="openaccount.html" %>
 
 ```
+
+## ErrorHandling
+JSPで例外を取得して出力ができるようにすることで、エラーが発生した場合に、ユーザーフレンドリーな画面を作成することができる。
+
+*エラーページ*
+```
+<!-- isErrorPage：これをtureにすることで、このJSPページに例外を引き渡すことができるようにする -->
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8" isErrorPage="true"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Error Page</title>
+</head>
+<body>
+	<P>Sorry,an error has occurd</P>
+	<%= exception.getMessage() %>
+</body>
+</html>
+```
+
+*このページでエラーが発生*
+```
+<!-- errorPage：どのエラーページを使用するかを指定する -->
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8" errorPage="errorHandler.jsp"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Error Generator</title>
+</head>
+<body>
+<%
+	String s = "123abc";
+	int num = Integer.parseInt(s);
+%>
+</body>
+</html>
+```

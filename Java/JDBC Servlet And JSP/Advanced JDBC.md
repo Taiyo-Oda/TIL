@@ -1,6 +1,6 @@
 # Advanced JDBC
 
-## バッチ処理（データベースに対して複数のDML文を一度に実行する）
+## バッチ処理（データベースに対して複数のDML(*1)文を一度に実行する）
 ```
 package com.bharath.trainings.jdbc.batch;
 
@@ -113,5 +113,7 @@ public class TransactionDAO {
 }
 
 ```
+
+*1 : DML(Data Manipulation Language)は SELECT/INSERT/UPDATE/DELETE などテーブルに対するデータの取得・追加・更新・削除を行うコマンド
 
 

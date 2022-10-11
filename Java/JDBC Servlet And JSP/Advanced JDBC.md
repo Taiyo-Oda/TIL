@@ -73,7 +73,10 @@ public class MetadataDAO {
 * 商品在庫の管理
 * クレジットカードの請求処理
 
-などの業務上まとめて実行すべき一連の処理を*「トランザクション」*という。トランザクションで重要なのは、含まれるすべての処理が成功しなければならないということである。
+などの業務上まとめて実行すべき一連の処理を「**トランザクション**」という。<br>
+トランザクションで重要なのは、含まれるすべての処理が成功しなければならないということである。<br>
+つまり、トランザクション内で何らかの例外が発生し、処理が実行できなかった場合、それまで行われたすべての処理を取り消す（ロールバックする）必要がある。
+
 
 ### トランザクション管理の実例
 ```
@@ -81,7 +84,8 @@ package com.bharath.trainings.jdbc.tm;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.SQLException;**トランザクション
+**
 import java.sql.Statement;
 
 public class TransactionDAO {

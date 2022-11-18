@@ -17,6 +17,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 bodyの下部にscript要素を置くことでも解決できるが、その場合、 HTML DOMが読み込まれるまで、スクリプトの読み込みと解析が完全にブロックされるため、JavaScriptがたくさんある大規模なサイトでは、パフォーマンス上の問題を引き起こす可能性があり、サイトが遅くなる。
 
+
 参考：[JavaScript とは - ウェブ開発を学ぶ | MDN](https://developer.mozilla.org/ja/docs/Learn/JavaScript/First_steps/What_is_JavaScript#script_loading_strategies)
 
 
